@@ -20,7 +20,7 @@ import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
 // ** Step Components
-import StepPropertyArea from 'src/views/pages/wizard-examples/scheduler/StepPropertyArea'
+import StepPersonalInformation from 'src/views/pages/wizard-examples/scheduler/StepPersonalInformation'
 import StepPriceDetails from 'src/views/pages/wizard-examples/scheduler/StepPriceDetails'
 import StepPropertyDetails from 'src/views/pages/wizard-examples/scheduler/StepPropertyDetails'
 import StepServiceSelection from 'src/views/pages/wizard-examples/scheduler/StepServiceSelection'
@@ -122,7 +122,7 @@ const PropertyListingWizard = () => {
       case 2:
         return <StepPropertyFeatures />
       case 3:
-        return <StepPropertyArea />
+        return <StepPersonalInformation />
       case 4:
         return <StepPriceDetails />
       default:
