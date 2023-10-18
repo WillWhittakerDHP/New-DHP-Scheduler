@@ -24,7 +24,7 @@ import StepPersonalInformation from 'src/views/pages/wizard-examples/scheduler/S
 import StepPriceDetails from 'src/views/pages/wizard-examples/scheduler/StepPriceDetails'
 import StepPropertyDetails from 'src/views/pages/wizard-examples/scheduler/StepPropertyDetails'
 import StepServiceSelection from 'src/views/pages/wizard-examples/scheduler/StepServiceSelection'
-import StepPropertyFeatures from 'src/views/pages/wizard-examples/scheduler/StepPropertyFeatures'
+import StepAppointmentAvailability from 'src/views/pages/wizard-examples/scheduler/StepAppointmentAvailability'
 
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
@@ -120,7 +120,7 @@ const PropertyListingWizard = () => {
       case 1:
         return <StepPropertyDetails />
       case 2:
-        return <StepPropertyFeatures />
+        return <StepAppointmentAvailability />
       case 3:
         return <StepPersonalInformation />
       case 4:
@@ -211,7 +211,7 @@ const PropertyListingWizard = () => {
           </Stepper>
         </StepperWrapper>
       </StepperHeaderContainer>
-      <CardContent sx={{ pt: theme => `${theme.spacing(6)} !important` }}>
+      <CardContent sx={{ width: '100%', pt: theme => `${theme.spacing(6)} !important` }}>
         {renderContent()}
         {renderFooter()}
       </CardContent>

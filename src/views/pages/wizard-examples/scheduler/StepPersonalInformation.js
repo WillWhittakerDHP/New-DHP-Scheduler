@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -13,10 +14,6 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 
-// ** Third Party Imports
-import DatePicker from 'react-datepicker'
-import Typography from "@mui/material/Typography";
-import Link from "next/link";
 
 const Sections = {
     CLIENT: 'Client',
@@ -25,26 +22,8 @@ const Sections = {
     SELLER: 'Seller'
 }
 
-const CustomInput = forwardRef(({...props}, ref) => {
-    // ** Props
-    const {label, readOnly} = props
-
-    return (
-        <CustomTextField
-            fullWidth
-            {...props}
-            inputRef={ref}
-            label={label || ''}
-            {...(readOnly && {inputProps: {readOnly: true}})}
-        />
-    )
-})
-
 const StepPersonalInformation = () => {
     // ** States
-    const [hasClient, setHasClient] = useState(false)
-    const [hasManager, setHasManager] = useState(false)
-    const [hasSeller, setHasSeller] = useState(false)
     const [sections, setSections] = useState({
         [Sections.CLIENT_2]: false,
         [Sections.TRANSACTION_MANAGER]: false,
