@@ -1,6 +1,12 @@
 import {useState} from "react";
 import { ContactTypes, DwellingType, RequesterTypes, ServiceTypes } from '../constants/Appointment';
 
+const DEFAULT_CONTACT_INFO = {
+    firstName: '',
+    lastName: '',
+    email: ''
+};
+
 const useAppointment = () => {
 
     // Service Selection
@@ -19,40 +25,32 @@ const useAppointment = () => {
 
     // Contact Information
     const [contactInfo, setContactInfo] = useState({
-        [ContactTypes.CLIENT]: {
-            firstName: '',
-            lastName: '',
-            email: ''
-        },
-        [ContactTypes.AGENT]: {
-            firstName: '',
-            lastName: '',
-            email: ''
-        },
-        [ContactTypes.ANOTHER_CLIENT]: {
-            firstName: '',
-            lastName: '',
-            email: ''
-        },
-        [ContactTypes.TRANSACTION_MANAGER]: {
-            firstName: '',
-            lastName: '',
-            email: ''
-        },
-        [ContactTypes.SELLER]: {
-            firstName: '',
-            lastName: '',
-            email: ''
-        },
+        [ContactTypes.CLIENT]: { ...DEFAULT_CONTACT_INFO },
+        [ContactTypes.AGENT]: { ...DEFAULT_CONTACT_INFO },
+        [ContactTypes.ANOTHER_CLIENT]: { ...DEFAULT_CONTACT_INFO },
+        [ContactTypes.TRANSACTION_MANAGER]: { ...DEFAULT_CONTACT_INFO },
+        [ContactTypes.SELLER]: { ...DEFAULT_CONTACT_INFO },
     });
+
+    // Schedule
+    const [inspectorTimeSlot, setInspectorTimeSlot] = useState('');
+    const [clientTimeSlot, setClientTimeSlot] = useState('');
+    const [day, setDay] = useState('');
+    const [minimizeInspectionTime, setMinimizeInspectionTime] = useState(false);
+    const [additionalPresentationTime, setAdditionalPresentationTime] = useState(false);
 
     return {
         address,
         additionalServices,
+        additionalPresentationTime,
         city,
+        clientTimeSlot,
         contactInfo,
+        day,
         dwellingSize,
         dwellingType,
+        inspectorTimeSlot,
+        minimizeInspectionTime,
         requester,
         serviceType,
         state,
@@ -60,10 +58,15 @@ const useAppointment = () => {
         zipCode,
         setAddress,
         setAdditionalServices,
+        setAdditionalPresentationTime,
         setCity,
+        setClientTimeSlot,
         setContactInfo,
+        setDay,
         setDwellingSize,
         setDwellingType,
+        setInspectorTimeSlot,
+        setMinimizeInspectionTime,
         setRequester,
         setServiceType,
         setState,

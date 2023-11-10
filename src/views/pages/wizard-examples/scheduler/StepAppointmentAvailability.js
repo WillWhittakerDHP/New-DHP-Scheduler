@@ -7,8 +7,6 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 // ** Custom Components Imports
 import DatePicker from "react-datepicker";
@@ -21,8 +19,20 @@ import IconButton from '@mui/material/IconButton';
 import Icon from "../../../../@core/components/icon";
 
 const StepAppointmentAvailability = props => {
-    // ** State
-    const [startTimeType, setStartTimeType] = useState('inspector')
+
+    const {
+        appointment,
+        appointment: {
+            additionalPresentationTime,
+            day,
+            inspectorTimeSlot,
+            clientTimeSlot,
+            minimizeInspectionTime
+        }
+    } = props;
+
+    const [startTimeType, setStartTimeType] = useState('inspector');
+
 
     const createTimeSlots = (startTime = 700, endTime = 2100, increments = 30) => {
         const slotsTotal = (endTime - startTime) * (60 / increments);
@@ -46,6 +56,39 @@ const StepAppointmentAvailability = props => {
         setStartTimeType('client')
     }
 
+    const handleTimeSlotClick = (slot, startTimeType) => {
+        if (startTimeType === 'inspector') {
+            appointment.setInspectorTimeSlot(slot);
+        } else {
+            appointment.setClientTimeSlot(slot);
+        }
+    }
+
+    const handleDateChange = date => {
+        appointment.setDay(date);
+    }
+
+    const handleMinimizeInspectorTimeToggle = () => {
+        appointment.setMinimizeInspectionTime(!minimizeInspectionTime);
+    }
+
+    const handleAdditionalClientTimeToggle = () => {
+        appointment.setAdditionalPresentationTime(!additionalPresentationTime);
+    }
+
+    const renderTimeSlots = () => {
+        const selectedTimeSlot = startTimeType === 'inspector' ? inspectorTimeSlot : clientTimeSlot;
+
+        return timeSlots[startTimeType].map(slot => (slot ?
+                <Button
+                    color={startTimeType === 'inspector' ? 'primary' : 'warning'}
+                    variant={selectedTimeSlot === slot ? 'contained' : 'outlined'} size='small'
+                    onClick={() => handleTimeSlotClick(slot, startTimeType)}>
+                    {slot}
+                </Button> : <div>&nbsp;</div>
+        ))
+    }
+
     return (
         <>
             <Grid container spacing={4}>
@@ -60,8 +103,11 @@ const StepAppointmentAvailability = props => {
                 <Grid item xs={12} md={3}>
                     <DatePickerWrapper
                         sx={{'& .react-datepicker': {boxShadow: 'none !important', border: 'none !important'}}}>
-                        <DatePicker inline onChange={date => {
-                        }}/>
+                        <DatePicker
+                            inline
+                            selected={day}
+                            startDate={day}
+                            onChange={handleDateChange} />
                     </DatePickerWrapper>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -94,14 +140,7 @@ const StepAppointmentAvailability = props => {
                         gridRowGap: '10px',
                         gridAutoFlow: 'column'
                     }}>
-                        {
-                            timeSlots[startTimeType].map(slot => (slot ?
-                                    <Button color={startTimeType === 'inspector' ? 'primary' : 'warning'}
-                                            variant='outlined' size='small'>
-                                        {slot}
-                                    </Button> : <div>&nbsp;</div>
-                            ))
-                        }
+                        {renderTimeSlots()}
                     </Box>
                     <Box sx={{
                         display: 'flex',
@@ -124,7 +163,10 @@ const StepAppointmentAvailability = props => {
                             display: 'flex',
                             alignItems: 'center'
                         }}>
-                            <FormControlLabel control={<Checkbox sx={{padding: '3px'}} defaultChecked/>}
+                            <FormControlLabel control={<Checkbox
+                                checked={minimizeInspectionTime}
+                                onChange={handleMinimizeInspectorTimeToggle}
+                                sx={{padding: '3px'}} defaultChecked/>}
                                               label='Minimize inspector time in property'/>
                             <Tooltip arrow placement='right' title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
                                 <IconButton sx={{ padding: '3px' }} aria-label='capture screenshot' color='primary'>
@@ -136,7 +178,10 @@ const StepAppointmentAvailability = props => {
                             display: 'flex',
                             alignItems: 'center'
                         }}>
-                            <FormControlLabel control={<Checkbox sx={{padding: '3px'}} defaultChecked/>}
+                            <FormControlLabel control={<Checkbox
+                                checked={additionalPresentationTime}
+                                onChange={handleAdditionalClientTimeToggle}
+                                sx={{padding: '3px'}} defaultChecked/>}
                                               label='Additional client presentation time'/>
                             <Tooltip arrow
                                      placement='right'
