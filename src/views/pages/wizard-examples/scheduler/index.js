@@ -55,7 +55,7 @@ const steps = [
   },
   {
     icon: 'tabler:currency-dollar',
-    title: 'Invoice',
+    title: 'Summary',
     subtitle: 'Summary of services'
   }
 ]

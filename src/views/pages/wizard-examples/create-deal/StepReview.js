@@ -43,84 +43,58 @@ const ReviewComplete = () => {
                   <TableRow>
                     <TableCell>
                       <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                        Deal Type
+                        Service Type
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ color: 'text.secondary' }}>Percentage</Typography>
+                      <Typography sx={{ color: 'text.secondary' }}>Walk & Talk</Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
                       <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                        Amount
+                        Additional Service
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ color: 'text.secondary' }}>25%</Typography>
+                      <Typography sx={{ color: 'text.secondary' }}>Radon Testing, Blue Tape</Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
                       <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                        Deal Code
+                        Dwelling Type
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <CustomChip rounded size='small' skin='light' color='warning' label='25PEROFF' />
+                      <Typography sx={{ color: 'text.secondary' }}>Condo</Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
                       <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                        Deal Title
+                        Address
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ color: 'text.secondary' }}>Black friday sale, 25% OFF</Typography>
+                      <Typography sx={{ color: 'text.secondary' }}>1209 13th St. NW #602, Washington DC, 20005</Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
                       <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                        Deal Duration
+                        Square Footage
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ color: 'text.secondary' }}>2021-07-14 to 2021-07-30</Typography>
+                      <Typography sx={{ color: 'text.secondary' }}>1000sqft</Typography>
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
           </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel control={<Switch />} label='I have confirmed the deal details.' />
-          </Grid>
         </Grid>
-      </Grid>
-      <Grid
-        item
-        lg={6}
-        xl={5}
-        xs={12}
-        sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', '& img': { maxWidth: '100%' } }}
-      >
-        <Box
-          sx={{
-            pt: 5,
-            px: 5,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            borderRadius: 1,
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-            border: theme => `1px solid ${theme.palette.divider}`
-          }}
-        >
-          <img height={230} alt='review-illustration' src='/images/pages/create-deal-review-complete.png' />
-        </Box>
       </Grid>
     </Grid>
   )
