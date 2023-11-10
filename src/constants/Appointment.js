@@ -1,0 +1,25 @@
+export const RequesterTypes = {
+    BUYER: 'buyer',
+    OWNER: 'owner',
+    AGENT: 'agent'
+};
+
+export const ServiceTypes = {
+    BUYERS_INSPECTION: 'buyersInspection',
+    WALK_AND_TALK: 'walkAndTalk',
+    RE_INSPECTION: 'reInspection'
+}
+
+export const AdditionalServices = {
+    RADON_TESTING: 'radonTesting',
+    BLUE_TAPE: 'blueTape',
+    RE_INSPECTION: 'reInspection'
+}
+
+export const DwellingType = {
+    CONDO: 'condo',
+    TOWNHOUSE: 'townhouse',
+    SINGLE_FAMILY: 'singleFamily',
+    MULTI_FAMILY: 'multiFamily'
+
+}

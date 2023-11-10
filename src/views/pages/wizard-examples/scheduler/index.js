@@ -1,7 +1,5 @@
-// ** React Imports
 import { useState } from 'react'
 
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Avatar from '@mui/material/Avatar'
@@ -13,24 +11,18 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiStep from '@mui/material/Step'
 import CardContent from '@mui/material/CardContent'
 
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
-
-// ** Custom Components Imports
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
-// ** Step Components
 import StepPersonalInformation from 'src/views/pages/wizard-examples/scheduler/StepPersonalInformation'
 import StepPriceDetails from 'src/views/pages/wizard-examples/scheduler/StepPriceDetails'
 import StepPropertyDetails from 'src/views/pages/wizard-examples/scheduler/StepPropertyDetails'
 import StepServiceSelection from 'src/views/pages/wizard-examples/scheduler/StepServiceSelection'
 import StepAppointmentAvailability from 'src/views/pages/wizard-examples/scheduler/StepAppointmentAvailability'
 
-// ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-
-// ** Styled Components
 import StepperWrapper from 'src/@core/styles/mui/stepper'
+import useAppointment from "../../../../hooks/useAppointment";
 
 const steps = [
   {
@@ -97,7 +89,11 @@ const Step = styled(MuiStep)(({ theme }) => ({
 
 const PropertyListingWizard = () => {
   // ** States
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(0);
+
+  const appointment = useAppointment();
+
+  // appointment.set
 
   // ** Hook
   const theme = useTheme()
@@ -116,9 +112,9 @@ const PropertyListingWizard = () => {
   const getStepContent = step => {
     switch (step) {
       case 0:
-        return <StepServiceSelection />
+        return <StepServiceSelection appointment={appointment} />
       case 1:
-        return <StepPropertyDetails />
+        return <StepPropertyDetails appointment={appointment} />
       case 2:
         return <StepAppointmentAvailability />
       case 3:
