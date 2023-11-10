@@ -1,19 +1,14 @@
-// ** React Imports
-import {useState, forwardRef} from 'react'
+import { useState } from 'react'
 
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
-
-// ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
-
+import { ContactTypes } from 'src/constants/Appointment';
 
 const Sections = {
     CLIENT: 'Client',
@@ -22,18 +17,61 @@ const Sections = {
     SELLER: 'Seller'
 }
 
-const StepPersonalInformation = () => {
-    // ** States
+const hasInfo = contact => contact.firstName || contact.lastName || contact.email;
+
+const StepPersonalInformation = props => {
+
+    const {
+        appointment,
+        appointment: { contactInfo }
+    } = props;
+
     const [sections, setSections] = useState({
-        [Sections.CLIENT_2]: false,
-        [Sections.TRANSACTION_MANAGER]: false,
-        [Sections.SELLER]: false,
+        [Sections.CLIENT_2]: hasInfo(contactInfo[ContactTypes.ANOTHER_CLIENT]),
+        [Sections.TRANSACTION_MANAGER]: hasInfo(contactInfo[ContactTypes.TRANSACTION_MANAGER]),
+        [Sections.SELLER]: hasInfo(contactInfo[ContactTypes.SELLER]),
     })
 
     const handleToggleSection = (state, section) => {
         setSections({
             ...sections,
             [section]: state
+        })
+    }
+
+    const handleFirstNameChange = (event , contactType) => {
+        const contactDetails = contactInfo[contactType];
+
+        appointment.setContactInfo({
+            ...contactInfo,
+            [contactType]: {
+                ...contactDetails,
+                firstName: event.target.value
+            }
+        })
+    }
+
+    const handleLastNameChange = (event , contactType) => {
+        const contactDetails = contactInfo[contactType];
+
+        appointment.setContactInfo({
+            ...contactInfo,
+            [contactType]: {
+                ...contactDetails,
+                firstName: event.target.value
+            }
+        })
+    }
+
+    const handleEmailChange = (event , contactType) => {
+        const contactDetails = contactInfo[contactType];
+
+        appointment.setContactInfo({
+            ...contactInfo,
+            [contactType]: {
+                ...contactDetails,
+                firstName: event.target.value
+            }
         })
     }
 
@@ -49,7 +87,7 @@ const StepPersonalInformation = () => {
                 onClick={() => handleToggleSection(true, section)}>Add {section}</Button>
     )
 
-    const renderContactForms = (title, canDelete, shouldShow = true) => {
+    const renderContactForms = (contactType, title, canDelete, shouldShow = true) => {
         if (!shouldShow) {
             return null;
         }
@@ -72,6 +110,8 @@ const StepPersonalInformation = () => {
                         fullWidth
                         label='First Name'
                         placeholder='Joe'
+                        value={contactInfo[contactType].firstName}
+                        onChange={e => handleFirstNameChange(e, contactType)}
                     />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -79,6 +119,8 @@ const StepPersonalInformation = () => {
                         fullWidth
                         label='Last Name'
                         placeholder='Smith'
+                        value={contactInfo[contactType].lastName}
+                        onChange={e => handleLastNameChange(e, contactType)}
                     />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -87,6 +129,8 @@ const StepPersonalInformation = () => {
                         type='email'
                         placeholder='joe.smith@xyz.com'
                         label='Email'
+                        value={contactInfo[contactType].email}
+                        onChange={e => handleEmailChange(e, contactType)}
                     />
                 </Grid>
             </Grid>
@@ -105,11 +149,11 @@ const StepPersonalInformation = () => {
                     </Typography>
                 </Grid>
             </Grid>
-            {renderContactForms('Client', false)}
-            {renderContactForms('Agent', false)}
-            {sections[Sections.CLIENT_2] && renderContactForms(Sections.CLIENT_2, true)}
-            {sections[Sections.TRANSACTION_MANAGER] && renderContactForms(Sections.TRANSACTION_MANAGER, true)}
-            {sections[Sections.SELLER] && renderContactForms(Sections.SELLER, true)}
+            {renderContactForms(ContactTypes.CLIENT, 'Client', false)}
+            {renderContactForms(ContactTypes.AGENT, 'Agent', false)}
+            {sections[Sections.CLIENT_2] && renderContactForms(ContactTypes.ANOTHER_CLIENT, Sections.CLIENT_2, true)}
+            {sections[Sections.TRANSACTION_MANAGER] && renderContactForms(ContactTypes.TRANSACTION_MANAGER, Sections.TRANSACTION_MANAGER, true)}
+            {sections[Sections.SELLER] && renderContactForms(ContactTypes.SELLER, Sections.SELLER, true)}
             <Grid container spacing={4} sx={{mt: 5}}>
                 <Grid item xs={12} md={9}>
                     {renderAddButton(Sections.CLIENT_2)}

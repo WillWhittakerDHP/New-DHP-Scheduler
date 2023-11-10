@@ -118,7 +118,7 @@ const PropertyListingWizard = () => {
       case 2:
         return <StepAppointmentAvailability />
       case 3:
-        return <StepPersonalInformation />
+        return <StepPersonalInformation appointment={appointment} />
       case 4:
         return <StepPriceDetails />
       default:

@@ -23,3 +23,11 @@ export const DwellingType = {
     MULTI_FAMILY: 'multiFamily'
 
 }
+
+export const ContactTypes = {
+    CLIENT: 'client',
+    AGENT: 'agent',
+    ANOTHER_CLIENT: 'anotherClient',
+    TRANSACTION_MANAGER: 'transactionManager',
+    SELLER: 'seller'
+}

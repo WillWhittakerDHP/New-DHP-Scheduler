@@ -1,5 +1,5 @@
 import {useState} from "react";
-import { DwellingType, RequesterTypes, ServiceTypes } from '../constants/Appointment';
+import { ContactTypes, DwellingType, RequesterTypes, ServiceTypes } from '../constants/Appointment';
 
 const useAppointment = () => {
 
@@ -17,10 +17,40 @@ const useAppointment = () => {
     const [zipCode, setZipCode] = useState('');
     const [dwellingSize, setDwellingSize] = useState(0);
 
+    // Contact Information
+    const [contactInfo, setContactInfo] = useState({
+        [ContactTypes.CLIENT]: {
+            firstName: '',
+            lastName: '',
+            email: ''
+        },
+        [ContactTypes.AGENT]: {
+            firstName: '',
+            lastName: '',
+            email: ''
+        },
+        [ContactTypes.ANOTHER_CLIENT]: {
+            firstName: '',
+            lastName: '',
+            email: ''
+        },
+        [ContactTypes.TRANSACTION_MANAGER]: {
+            firstName: '',
+            lastName: '',
+            email: ''
+        },
+        [ContactTypes.SELLER]: {
+            firstName: '',
+            lastName: '',
+            email: ''
+        },
+    });
+
     return {
         address,
         additionalServices,
         city,
+        contactInfo,
         dwellingSize,
         dwellingType,
         requester,
@@ -31,6 +61,7 @@ const useAppointment = () => {
         setAddress,
         setAdditionalServices,
         setCity,
+        setContactInfo,
         setDwellingSize,
         setDwellingType,
         setRequester,
