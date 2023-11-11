@@ -1,5 +1,5 @@
 // ** React Imports
-import {useState} from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -17,6 +17,8 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from '@mui/material/IconButton';
 import Icon from "../../../../@core/components/icon";
+
+import parse from 'date-fns/parse';
 
 const StepAppointmentAvailability = props => {
 
@@ -58,6 +60,9 @@ const StepAppointmentAvailability = props => {
 
     const handleTimeSlotClick = (slot, startTimeType) => {
         if (startTimeType === 'inspector') {
+            const x = parse(slot, 'hh:mmaa', day);
+            console.log(x);
+
             appointment.setInspectorTimeSlot(slot);
         } else {
             appointment.setClientTimeSlot(slot);
@@ -89,6 +94,32 @@ const StepAppointmentAvailability = props => {
         ))
     }
 
+    const renderTimeBars = () => {
+        if (!inspectorTimeSlot && !clientTimeSlot) {
+            return null;
+        }
+
+        return (
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                flexDirection: 'column',
+                marginBottom: '30px',
+                rowGap: '5px',
+                padding: '0 30px'
+            }}>
+                <Button sx={{width: '100%', justifyContent: 'right'}} variant='contained'
+                        onClick={handleInspectorClick}>
+                    Inspector: 9:30am → 11:30am
+                </Button>
+                <Button sx={{width: '250px', justifyContent: 'right'}} color='warning' variant='contained'
+                        onClick={handleClientClick}>
+                    Client: 10:30am → 11:30am
+                </Button>
+            </Box>
+        )
+    }
+
     return (
         <>
             <Grid container spacing={4}>
@@ -107,7 +138,7 @@ const StepAppointmentAvailability = props => {
                             inline
                             selected={day}
                             startDate={day}
-                            onChange={handleDateChange} />
+                            onChange={handleDateChange}/>
                     </DatePickerWrapper>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -142,20 +173,7 @@ const StepAppointmentAvailability = props => {
                     }}>
                         {renderTimeSlots()}
                     </Box>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        flexDirection: 'column',
-                        marginBottom: '30px',
-                        rowGap: '5px',
-                        padding: '0 30px' }}>
-                        <Button sx={{ width: '100%', justifyContent: 'right' }} variant='contained' onClick={handleInspectorClick}>
-                            Inspector: 9:30am → 11:30am
-                        </Button>
-                        <Button sx={{ width: '250px', justifyContent: 'right' }} color='warning' variant='contained' onClick={handleClientClick}>
-                            Client: 10:30am → 11:30am 
-                        </Button>
-                    </Box>
+                    {renderTimeBars()}
                     <Box sx={{
                         padding: '0 30px'
                     }}>
@@ -168,8 +186,9 @@ const StepAppointmentAvailability = props => {
                                 onChange={handleMinimizeInspectorTimeToggle}
                                 sx={{padding: '3px'}} defaultChecked/>}
                                               label='Minimize inspector time in property'/>
-                            <Tooltip arrow placement='right' title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
-                                <IconButton sx={{ padding: '3px' }} aria-label='capture screenshot' color='primary'>
+                            <Tooltip arrow placement='right'
+                                     title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
+                                <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
                                     <Icon icon='ph:info-light'/>
                                 </IconButton>
                             </Tooltip>
@@ -186,7 +205,7 @@ const StepAppointmentAvailability = props => {
                             <Tooltip arrow
                                      placement='right'
                                      title='If client would like to spend additional time on the property with the inspector, time will be extended on site to accommodate. Additional costs apply'>
-                                <IconButton sx={{ padding: '3px' }} aria-label='capture screenshot' color='primary'>
+                                <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
                                     <Icon color='primary' icon='ph:info-light'/>
                                 </IconButton>
                             </Tooltip>

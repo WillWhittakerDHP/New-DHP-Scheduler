@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useCallback, useState } from "react";
 import { ContactTypes, DwellingType, RequesterTypes, ServiceTypes } from '../constants/Appointment';
 
 const DEFAULT_CONTACT_INFO = {
@@ -39,6 +39,12 @@ const useAppointment = () => {
     const [minimizeInspectionTime, setMinimizeInspectionTime] = useState(false);
     const [additionalPresentationTime, setAdditionalPresentationTime] = useState(false);
 
+    const setTimeSlot = useCallback(({ inspectorTimeSlot, clientTimeSlot }) => {
+
+        console.log(day);
+
+    }, [ day, inspectorTimeSlot ]);
+
     return {
         address,
         additionalServices,
@@ -70,6 +76,7 @@ const useAppointment = () => {
         setRequester,
         setServiceType,
         setState,
+        setTimeSlot,
         setUnit,
         setZipCode
     }
