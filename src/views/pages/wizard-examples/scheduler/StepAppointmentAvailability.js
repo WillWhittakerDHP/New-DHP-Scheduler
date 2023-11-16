@@ -1,3 +1,5 @@
+import format from 'date-fns/format';
+
 // ** React Imports
 import { useState } from 'react'
 
@@ -29,25 +31,27 @@ const StepAppointmentAvailability = props => {
             day,
             inspectorTimeSlot,
             clientTimeSlot,
-            minimizeInspectionTime
+            minimizeInspectionTime,
+            timeSlots
         }
     } = props;
 
-    const [startTimeType, setStartTimeType] = useState('inspector');
+    const [ startTimeType, setStartTimeType ] = useState('inspector');
 
-
-    const createTimeSlots = (startTime = 700, endTime = 2100, increments = 30) => {
-        const slotsTotal = (endTime - startTime) * (60 / increments);
-        return Array.from({length: slotsTotal}, (_, i) => startTime + i * increments);
+    const getTimeSlots = startTimeType => {
+        if (startTimeType === 'inspector') {
+            return getInspectorTimes();
+        } else {
+            return getClientTimes();
+        }
     }
 
-    const timeSlots = {
-        inspector: ['7:00am', '7:30am', '8:00am', '8:30am', '', '', '', '', '11:00am', '11:30am', '12:00am',
-            '12:30am', '01:00pm', '01:30pm', '02:00pm', '02:30pm', '', '', '', '', '05:00pm',
-            '', '', '', '', '07:30pm', '08:00pm', '08:30pm'],
-        client: ['7:00pm', '7:30pm', '8:00pm', '', '', '', '', '10:30pm', '11:00pm', '11:30pm', '12:00pm',
-            '12:30pm', '01:00pm', '01:30pm', '02:00pm', '02:30pm', '03:00pm', '03:30pm', '04:00pm', '04:30pm', '05:00pm',
-            '05:30pm', '06:00pm', '06:30pm', '07:00pm', '', '', '08:30pm']
+    const getInspectorTimes = () => {
+        return timeSlots.map(({ inspectorStart }) => format(inspectorStart.start, 'hh:mmaa'));
+    }
+
+    const getClientTimes = () => {
+        return timeSlots.map(({ clientStart }) => format(clientStart.start, 'hh:mmaa'));
     }
 
     const handleInspectorClick = () => {
@@ -60,12 +64,9 @@ const StepAppointmentAvailability = props => {
 
     const handleTimeSlotClick = (slot, startTimeType) => {
         if (startTimeType === 'inspector') {
-            const x = parse(slot, 'hh:mmaa', day);
-            console.log(x);
-
-            appointment.setInspectorTimeSlot(slot);
+            appointment.setTimeSlot({ inspectorTimeSlot: slot });
         } else {
-            appointment.setClientTimeSlot(slot);
+            appointment.setTimeSlot({ clientTimeSlot: slot });
         }
     }
 
@@ -84,7 +85,7 @@ const StepAppointmentAvailability = props => {
     const renderTimeSlots = () => {
         const selectedTimeSlot = startTimeType === 'inspector' ? inspectorTimeSlot : clientTimeSlot;
 
-        return timeSlots[startTimeType].map(slot => (slot ?
+        return getTimeSlots(startTimeType).map(slot => (slot ?
                 <Button
                     color={startTimeType === 'inspector' ? 'primary' : 'warning'}
                     variant={selectedTimeSlot === slot ? 'contained' : 'outlined'} size='small'

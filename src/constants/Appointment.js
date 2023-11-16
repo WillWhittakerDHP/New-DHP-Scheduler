@@ -31,3 +31,9 @@ export const ContactTypes = {
     TRANSACTION_MANAGER: 'transactionManager',
     SELLER: 'seller'
 }
+
+export const SlotLengthServiceTypes = {
+    [ServiceTypes.BUYERS_INSPECTION]: {hours: 2},
+    [ServiceTypes.WALK_AND_TALK]: {hours: 1},
+    [ServiceTypes.RE_INSPECTION]: {minutes: 30}
+}

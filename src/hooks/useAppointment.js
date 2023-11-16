@@ -1,11 +1,14 @@
-import { useCallback, useState } from "react";
-import { ContactTypes, DwellingType, RequesterTypes, ServiceTypes } from '../constants/Appointment';
+import { useCallback, useEffect, useState } from "react";
+import {ContactTypes, DwellingType, RequesterTypes, ServiceTypes, SlotLengthServiceTypes} from '../constants/Appointment';
+import getTimeSlots from "../utils/getTimeSlots";
 
 const DEFAULT_CONTACT_INFO = {
     firstName: '',
     lastName: '',
     email: ''
 };
+
+const DEFAULT_SLOT_LENGTH = { hours: 2 };
 
 const useAppointment = () => {
 
@@ -25,11 +28,11 @@ const useAppointment = () => {
 
     // Contact Information
     const [contactInfo, setContactInfo] = useState({
-        [ContactTypes.CLIENT]: { ...DEFAULT_CONTACT_INFO },
-        [ContactTypes.AGENT]: { ...DEFAULT_CONTACT_INFO },
-        [ContactTypes.ANOTHER_CLIENT]: { ...DEFAULT_CONTACT_INFO },
-        [ContactTypes.TRANSACTION_MANAGER]: { ...DEFAULT_CONTACT_INFO },
-        [ContactTypes.SELLER]: { ...DEFAULT_CONTACT_INFO },
+        [ContactTypes.CLIENT]: {...DEFAULT_CONTACT_INFO},
+        [ContactTypes.AGENT]: {...DEFAULT_CONTACT_INFO},
+        [ContactTypes.ANOTHER_CLIENT]: {...DEFAULT_CONTACT_INFO},
+        [ContactTypes.TRANSACTION_MANAGER]: {...DEFAULT_CONTACT_INFO},
+        [ContactTypes.SELLER]: {...DEFAULT_CONTACT_INFO},
     });
 
     // Schedule
@@ -39,11 +42,44 @@ const useAppointment = () => {
     const [minimizeInspectionTime, setMinimizeInspectionTime] = useState(false);
     const [additionalPresentationTime, setAdditionalPresentationTime] = useState(false);
 
+    const [timeSlots, setTimeSlots] = useState([]);
+    const [slotLength, setSlotLength] = useState(DEFAULT_SLOT_LENGTH)
+
+    useEffect(() => {
+        console.log(serviceType);
+        console.log( SlotLengthServiceTypes[serviceType]);
+        setSlotLength(SlotLengthServiceTypes[serviceType])
+    }, [serviceType]);
+
+    useEffect(() => {
+        setTimeSlots(getTimeSlots(day, {
+            startTime: [7, 0],
+            endTime: [21, 0],
+            slotLength
+        }))
+    }, [day, slotLength]);
+
+    const getClientTimeSlot = inspectorTimeSlot => {
+        return timeSlots.find(timeSlot => timeSlot.inspectorStart === inspectorTimeSlot);
+    }
+
+    const getInspectorTimeSlot = clientTimeSlot => {
+        return timeSlots.find(timeSlot => timeSlot.clientStart === clientTimeSlot);
+    }
+
     const setTimeSlot = useCallback(({ inspectorTimeSlot, clientTimeSlot }) => {
+        if (inspectorTimeSlot) {
+            const { clientStart } = getClientTimeSlot(inspectorTimeSlot);
 
-        console.log(day);
+            setInspectorTimeSlot(inspectorTimeSlot)
+            setClientTimeSlot(clientStart);
+        } else {
+            const { inspectorStart } = getInspectorTimeSlot(clientTimeSlot);
 
-    }, [ day, inspectorTimeSlot ]);
+            setInspectorTimeSlot(inspectorStart);
+            setClientTimeSlot(clientTimeSlot);
+        }
+    }, [inspectorTimeSlot, clientTimeSlot]);
 
     return {
         address,
@@ -60,6 +96,7 @@ const useAppointment = () => {
         requester,
         serviceType,
         state,
+        timeSlots,
         unit,
         zipCode,
         setAddress,
