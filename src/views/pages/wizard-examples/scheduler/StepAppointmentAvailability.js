@@ -1,5 +1,3 @@
-import format from 'date-fns/format';
-
 // ** React Imports
 import { useState } from 'react'
 
@@ -32,6 +30,7 @@ const StepAppointmentAvailability = props => {
             inspectorTimeSlot,
             clientTimeSlot,
             minimizeInspectionTime,
+            selectedTimeSlotPair,
             timeSlots
         }
     } = props;
@@ -47,11 +46,11 @@ const StepAppointmentAvailability = props => {
     }
 
     const getInspectorTimes = () => {
-        return timeSlots.map(({ inspectorStart }) => format(inspectorStart.start, 'hh:mmaa'));
+        return timeSlots.map(({ inspectorSlot }) => inspectorSlot.startLabel);
     }
 
     const getClientTimes = () => {
-        return timeSlots.map(({ clientStart }) => format(clientStart.start, 'hh:mmaa'));
+        return timeSlots.map(({ clientSlot }) => clientSlot.startLabel);
     }
 
     const handleInspectorClick = () => {
@@ -64,9 +63,9 @@ const StepAppointmentAvailability = props => {
 
     const handleTimeSlotClick = (slot, startTimeType) => {
         if (startTimeType === 'inspector') {
-            appointment.setTimeSlot({ inspectorTimeSlot: slot });
+            appointment.setTimeSlot({ inspectorStart: slot });
         } else {
-            appointment.setTimeSlot({ clientTimeSlot: slot });
+            appointment.setTimeSlot({ clientStart: slot });
         }
     }
 
@@ -96,9 +95,11 @@ const StepAppointmentAvailability = props => {
     }
 
     const renderTimeBars = () => {
-        if (!inspectorTimeSlot && !clientTimeSlot) {
+        if (!selectedTimeSlotPair) {
             return null;
         }
+
+        const { inspectorSlot, clientSlot } = selectedTimeSlotPair;
 
         return (
             <Box sx={{
@@ -111,13 +112,105 @@ const StepAppointmentAvailability = props => {
             }}>
                 <Button sx={{width: '100%', justifyContent: 'right'}} variant='contained'
                         onClick={handleInspectorClick}>
-                    Inspector: 9:30am → 11:30am
+                    Inspector: {inspectorSlot.startLabel} → {inspectorSlot.endLabel}
                 </Button>
                 <Button sx={{width: '250px', justifyContent: 'right'}} color='warning' variant='contained'
                         onClick={handleClientClick}>
-                    Client: 10:30am → 11:30am
+                    Client: {clientSlot.startLabel} → {clientSlot.endLabel}
                 </Button>
             </Box>
+        )
+    }
+
+    const renderTimeSelection = () => {
+        if (!day) {
+            return (
+                <Grid item xs={12} md={9}>
+                    <Box sx={{
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'
+                    }}>
+                        Select a time for your appointment
+                    </Box>
+                </Grid>
+            )
+        }
+
+        return (
+            <Grid item xs={12} md={9}>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'end',
+                    flexWrap: 'wrap'
+                }}>
+                    <Typography variant='body2' sx={{mr: 3}}>
+                        Show start times for:
+                    </Typography>
+                    <Button variant={startTimeType === 'inspector' ? 'contained' : 'outlined'}
+                            color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small'
+                            onClick={handleInspectorClick}>
+                        Inspector
+                    </Button>
+                    <Button variant={startTimeType !== 'inspector' ? 'contained' : 'outlined'}
+                            color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small' sx={{ml: 1}}
+                            onClick={handleClientClick}>
+                        Client
+                    </Button>
+                </Box>
+                <Box sx={{
+                    padding: '30px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gridTemplateRows: 'repeat(7, 1fr)',
+                    gridColumnGap: '10px',
+                    gridRowGap: '10px',
+                    gridAutoFlow: 'column'
+                }}>
+                    {renderTimeSlots()}
+                </Box>
+                {renderTimeBars()}
+                <Box sx={{
+                    padding: '0 30px'
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <FormControlLabel control={<Checkbox
+                            checked={minimizeInspectionTime}
+                            onChange={handleMinimizeInspectorTimeToggle}
+                            sx={{padding: '3px'}} defaultChecked/>}
+                                          label='Minimize inspector time in property'/>
+                        <Tooltip arrow placement='right'
+                                 title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
+                            <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
+                                <Icon icon='ph:info-light'/>
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <FormControlLabel control={<Checkbox
+                            checked={additionalPresentationTime}
+                            onChange={handleAdditionalClientTimeToggle}
+                            sx={{padding: '3px'}} defaultChecked/>}
+                                          label='Additional client presentation time'/>
+                        <Tooltip arrow
+                                 placement='right'
+                                 title='If client would like to spend additional time on the property with the inspector, time will be extended on site to accommodate. Additional costs apply'>
+                            <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
+                                <Icon color='primary' icon='ph:info-light'/>
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </Box>
+            </Grid>
         )
     }
 
@@ -142,77 +235,7 @@ const StepAppointmentAvailability = props => {
                             onChange={handleDateChange}/>
                     </DatePickerWrapper>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'end',
-                        flexWrap: 'wrap'
-                    }}>
-                        <Typography variant='body2' sx={{mr: 3}}>
-                            Show start times for:
-                        </Typography>
-                        <Button variant={startTimeType === 'inspector' ? 'contained' : 'outlined'}
-                                color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small'
-                                onClick={handleInspectorClick}>
-                            Inspector
-                        </Button>
-                        <Button variant={startTimeType !== 'inspector' ? 'contained' : 'outlined'}
-                                color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small' sx={{ml: 1}}
-                                onClick={handleClientClick}>
-                            Client
-                        </Button>
-                    </Box>
-                    <Box sx={{
-                        padding: '30px',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
-                        gridTemplateRows: 'repeat(7, 1fr)',
-                        gridColumnGap: '10px',
-                        gridRowGap: '10px',
-                        gridAutoFlow: 'column'
-                    }}>
-                        {renderTimeSlots()}
-                    </Box>
-                    {renderTimeBars()}
-                    <Box sx={{
-                        padding: '0 30px'
-                    }}>
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}>
-                            <FormControlLabel control={<Checkbox
-                                checked={minimizeInspectionTime}
-                                onChange={handleMinimizeInspectorTimeToggle}
-                                sx={{padding: '3px'}} defaultChecked/>}
-                                              label='Minimize inspector time in property'/>
-                            <Tooltip arrow placement='right'
-                                     title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
-                                <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
-                                    <Icon icon='ph:info-light'/>
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}>
-                            <FormControlLabel control={<Checkbox
-                                checked={additionalPresentationTime}
-                                onChange={handleAdditionalClientTimeToggle}
-                                sx={{padding: '3px'}} defaultChecked/>}
-                                              label='Additional client presentation time'/>
-                            <Tooltip arrow
-                                     placement='right'
-                                     title='If client would like to spend additional time on the property with the inspector, time will be extended on site to accommodate. Additional costs apply'>
-                                <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
-                                    <Icon color='primary' icon='ph:info-light'/>
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </Box>
-                </Grid>
+                {renderTimeSelection()}
             </Grid>
         </>
     )

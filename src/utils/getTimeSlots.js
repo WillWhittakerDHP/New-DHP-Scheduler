@@ -1,124 +1,24 @@
 import add from  'date-fns/add';
 import isWithinInterval from 'date-fns/isWithinInterval';
-
-const DUMMY_TIME_SLOTS = [
-    {
-        inspectorStart: '7:00am',
-        inspectorEnd: '',
-        clientStart: '9:00am'
-    },
-    {
-        inspectorStart: '7:30am',
-        inspectorEnd: '',
-        clientStart: '9:30am'
-    },
-    {
-        inspectorStart: '8:00am',
-        inspectorEnd: '',
-        clientStart: '10:00am'
-    },
-    {
-        inspectorStart: '8:30am',
-        inspectorEnd: '',
-        clientStart: '10:30am'
-    },
-    {
-        inspectorStart: '9:00am',
-        inspectorEnd: '',
-        clientStart: '11:00am'
-    },
-    {
-        inspectorStart: '9:30am',
-        inspectorEnd: '',
-        clientStart: '11:30am'
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '11:00am',
-        inspectorEnd: '',
-        clientStart: '1:00pm'
-    },
-    {
-        inspectorStart: '11:30am',
-        inspectorEnd: '',
-        clientStart: '1:30pm'
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '2:00pm',
-        inspectorEnd: '',
-        clientStart: '4:00pm'
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '',
-        inspectorEnd: '',
-        clientStart: ''
-    },
-    {
-        inspectorStart: '6:00pm',
-        inspectorEnd: '',
-        clientStart: '8:00pm'
-    }
-];
+import format from "date-fns/format";
 
 const DEFAULT_INCREMENT = 30;
 
+const getLabel = date => format(date, 'h:mmaaa');
+
 const getSlotInterval = (date, { minutesIncrement, slotLength }) => {
-    const newDate = minutesIncrement
-        ? add(new Date(date.getTime()), { minutes: DEFAULT_INCREMENT })
+    const newStart = minutesIncrement
+        ? add(new Date(date.getTime()), { minutes: minutesIncrement })
         : date;
 
+    const start = new Date(newStart.getTime())
+    const end = add(new Date(newStart.getTime()), slotLength)
+
     return {
-        start: new Date(newDate.getTime()),
-        end: add(new Date(newDate.getTime()), slotLength)
+        start,
+        startLabel: getLabel(start),
+        end,
+        endLabel: getLabel(end)
     }
 }
 
@@ -140,7 +40,13 @@ const getTimeSlots = (date, { startTime, endTime, slotLength }) => {
 
     while (haveGoodSlots) {
         if (isWithinInterval(currentSlot.end, { start: startDate, end: endDate })) {
-            timeSlots.push({ inspectorStart: currentSlot });
+            timeSlots.push({
+                inspectorSlot: currentSlot,
+                clientSlot: getSlotInterval(currentSlot.start, {
+                    minutesIncrement: 60,
+                    slotLength: { hours: 1 }
+                })
+            });
             currentSlot = getSlotInterval(currentSlot.start, {
                 minutesIncrement: DEFAULT_INCREMENT,
                 slotLength

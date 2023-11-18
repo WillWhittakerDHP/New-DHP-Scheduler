@@ -1,5 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import {ContactTypes, DwellingType, RequesterTypes, ServiceTypes, SlotLengthServiceTypes} from '../constants/Appointment';
+import {useCallback, useEffect, useState} from "react";
+import {
+    ContactTypes,
+    DwellingType,
+    RequesterTypes,
+    ServiceTypes,
+    SlotLengthServiceTypes
+} from '../constants/Appointment';
 import getTimeSlots from "../utils/getTimeSlots";
 
 const DEFAULT_CONTACT_INFO = {
@@ -8,7 +14,7 @@ const DEFAULT_CONTACT_INFO = {
     email: ''
 };
 
-const DEFAULT_SLOT_LENGTH = { hours: 2 };
+const DEFAULT_SLOT_LENGTH = {hours: 2};
 
 const useAppointment = () => {
 
@@ -42,12 +48,11 @@ const useAppointment = () => {
     const [minimizeInspectionTime, setMinimizeInspectionTime] = useState(false);
     const [additionalPresentationTime, setAdditionalPresentationTime] = useState(false);
 
+    const [selectedTimeSlotPair, setSelectedTimeSlotPair] = useState();
     const [timeSlots, setTimeSlots] = useState([]);
     const [slotLength, setSlotLength] = useState(DEFAULT_SLOT_LENGTH)
 
     useEffect(() => {
-        console.log(serviceType);
-        console.log( SlotLengthServiceTypes[serviceType]);
         setSlotLength(SlotLengthServiceTypes[serviceType])
     }, [serviceType]);
 
@@ -59,27 +64,23 @@ const useAppointment = () => {
         }))
     }, [day, slotLength]);
 
-    const getClientTimeSlot = inspectorTimeSlot => {
-        return timeSlots.find(timeSlot => timeSlot.inspectorStart === inspectorTimeSlot);
-    }
+    const getInspectorTimeSlot = useCallback(inspectorTimeStart => {
+        return timeSlots.find(({inspectorSlot}) => inspectorSlot.startLabel === inspectorTimeStart);
+    }, [timeSlots]);
 
-    const getInspectorTimeSlot = clientTimeSlot => {
-        return timeSlots.find(timeSlot => timeSlot.clientStart === clientTimeSlot);
-    }
+    const getClientTimeSlot = useCallback(clientTimeStart => {
+        return timeSlots.find(({clientSlot}) => clientSlot.startLabel === clientTimeStart);
+    }, [timeSlots]);
 
-    const setTimeSlot = useCallback(({ inspectorTimeSlot, clientTimeSlot }) => {
-        if (inspectorTimeSlot) {
-            const { clientStart } = getClientTimeSlot(inspectorTimeSlot);
+    const setTimeSlot = useCallback(({inspectorStart, clientStart}) => {
+        const timeSlotPair = inspectorStart
+            ? getInspectorTimeSlot(inspectorStart)
+            : getClientTimeSlot(clientStart)
 
-            setInspectorTimeSlot(inspectorTimeSlot)
-            setClientTimeSlot(clientStart);
-        } else {
-            const { inspectorStart } = getInspectorTimeSlot(clientTimeSlot);
-
-            setInspectorTimeSlot(inspectorStart);
-            setClientTimeSlot(clientTimeSlot);
-        }
-    }, [inspectorTimeSlot, clientTimeSlot]);
+        setSelectedTimeSlotPair(timeSlotPair);
+        setInspectorTimeSlot(timeSlotPair.inspectorSlot.startLabel)
+        setClientTimeSlot(timeSlotPair.clientSlot.startLabel);
+    }, [inspectorTimeSlot, clientTimeSlot, timeSlots]);
 
     return {
         address,
@@ -94,6 +95,7 @@ const useAppointment = () => {
         inspectorTimeSlot,
         minimizeInspectionTime,
         requester,
+        selectedTimeSlotPair,
         serviceType,
         state,
         timeSlots,
