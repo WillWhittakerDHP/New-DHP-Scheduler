@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import {useState} from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -35,7 +35,7 @@ const StepAppointmentAvailability = props => {
         }
     } = props;
 
-    const [ startTimeType, setStartTimeType ] = useState('inspector');
+    const [startTimeType, setStartTimeType] = useState('inspector');
 
     const getTimeSlots = startTimeType => {
         if (startTimeType === 'inspector') {
@@ -46,12 +46,14 @@ const StepAppointmentAvailability = props => {
     }
 
     const getInspectorTimes = () => {
-        return timeSlots.map(({ inspectorSlot }) => inspectorSlot.startLabel);
+        return timeSlots.map(({inspectorSlot}) => inspectorSlot.startLabel);
     }
 
     const getClientTimes = () => {
-        return timeSlots.map(({ clientSlot }) => clientSlot.startLabel);
+        return timeSlots.map(({clientSlot}) => clientSlot.startLabel);
     }
+
+    /* -------- Handlers -------- */
 
     const handleInspectorClick = () => {
         setStartTimeType('inspector')
@@ -63,14 +65,15 @@ const StepAppointmentAvailability = props => {
 
     const handleTimeSlotClick = (slot, startTimeType) => {
         if (startTimeType === 'inspector') {
-            appointment.setTimeSlot({ inspectorStart: slot });
+            appointment.setTimeSlot({inspectorStart: slot});
         } else {
-            appointment.setTimeSlot({ clientStart: slot });
+            appointment.setTimeSlot({clientStart: slot});
         }
     }
 
     const handleDateChange = date => {
         appointment.setDay(date);
+        appointment.resetTimeSlot();
     }
 
     const handleMinimizeInspectorTimeToggle = () => {
@@ -81,10 +84,12 @@ const StepAppointmentAvailability = props => {
         appointment.setAdditionalPresentationTime(!additionalPresentationTime);
     }
 
+    /* -------- Renderers -------- */
+
     const renderTimeSlots = () => {
         const selectedTimeSlot = startTimeType === 'inspector' ? inspectorTimeSlot : clientTimeSlot;
 
-        return getTimeSlots(startTimeType).map(slot => (slot ?
+        const timeSlots = getTimeSlots(startTimeType).map(slot => (slot ?
                 <Button
                     color={startTimeType === 'inspector' ? 'primary' : 'warning'}
                     variant={selectedTimeSlot === slot ? 'contained' : 'outlined'} size='small'
@@ -92,6 +97,20 @@ const StepAppointmentAvailability = props => {
                     {slot}
                 </Button> : <div>&nbsp;</div>
         ))
+
+        return (
+            <Box sx={{
+                padding: '30px 0',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gridTemplateRows: 'repeat(7, 1fr)',
+                gridColumnGap: '10px',
+                gridRowGap: '10px',
+                gridAutoFlow: 'column'
+            }}>
+                {timeSlots}
+            </Box>
+        )
     }
 
     const renderTimeBars = () => {
@@ -99,7 +118,7 @@ const StepAppointmentAvailability = props => {
             return null;
         }
 
-        const { inspectorSlot, clientSlot } = selectedTimeSlotPair;
+        const {inspectorSlot, clientSlot} = selectedTimeSlotPair;
 
         return (
             <Box sx={{
@@ -108,13 +127,12 @@ const StepAppointmentAvailability = props => {
                 flexDirection: 'column',
                 marginBottom: '30px',
                 rowGap: '5px',
-                padding: '0 30px'
             }}>
-                <Button sx={{width: '100%', justifyContent: 'right'}} variant='contained'
+                <Button sx={{width: '100%', minWidth: '250px', justifyContent: 'right'}} variant='contained'
                         onClick={handleInspectorClick}>
                     Inspector: {inspectorSlot.startLabel} → {inspectorSlot.endLabel}
                 </Button>
-                <Button sx={{width: '250px', justifyContent: 'right'}} color='warning' variant='contained'
+                <Button sx={{width: '50%', minWidth: '250px', justifyContent: 'right'}} color='warning' variant='contained'
                         onClick={handleClientClick}>
                     Client: {clientSlot.startLabel} → {clientSlot.endLabel}
                 </Button>
@@ -122,10 +140,50 @@ const StepAppointmentAvailability = props => {
         )
     }
 
+    const renderChoices = () => {
+        return (
+            <Box>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                }}>
+                    <FormControlLabel control={<Checkbox
+                        checked={minimizeInspectionTime}
+                        onChange={handleMinimizeInspectorTimeToggle}
+                        sx={{padding: '3px'}} defaultChecked/>}
+                                      label='Minimize inspector time in property'/>
+                    <Tooltip arrow placement='right'
+                             title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
+                        <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
+                            <Icon icon='ph:info-light'/>
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                }}>
+                    <FormControlLabel control={<Checkbox
+                        checked={additionalPresentationTime}
+                        onChange={handleAdditionalClientTimeToggle}
+                        sx={{padding: '3px'}} defaultChecked/>}
+                                      label='Additional client presentation time'/>
+                    <Tooltip arrow
+                             placement='right'
+                             title='If client would like to spend additional time on the property with the inspector, time will be extended on site to accommodate. Additional costs apply'>
+                        <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
+                            <Icon color='primary' icon='ph:info-light'/>
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            </Box>
+        )
+    }
+
     const renderTimeSelection = () => {
         if (!day) {
             return (
-                <Grid item xs={12} md={9}>
+                <Grid item sm={12} md={8}>
                     <Box sx={{
                         height: '100%',
                         display: 'flex',
@@ -140,7 +198,7 @@ const StepAppointmentAvailability = props => {
         }
 
         return (
-            <Grid item xs={12} md={9}>
+            <Grid item sm={12} md={8}>
                 <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -161,55 +219,9 @@ const StepAppointmentAvailability = props => {
                         Client
                     </Button>
                 </Box>
-                <Box sx={{
-                    padding: '30px',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gridTemplateRows: 'repeat(7, 1fr)',
-                    gridColumnGap: '10px',
-                    gridRowGap: '10px',
-                    gridAutoFlow: 'column'
-                }}>
-                    {renderTimeSlots()}
-                </Box>
+                {renderTimeSlots()}
                 {renderTimeBars()}
-                <Box sx={{
-                    padding: '0 30px'
-                }}>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}>
-                        <FormControlLabel control={<Checkbox
-                            checked={minimizeInspectionTime}
-                            onChange={handleMinimizeInspectorTimeToggle}
-                            sx={{padding: '3px'}} defaultChecked/>}
-                                          label='Minimize inspector time in property'/>
-                        <Tooltip arrow placement='right'
-                                 title='Your inspector accesses the property early to examine the property and test the equipment before the client presentation. The report will be written AFTER the client presentation'>
-                            <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
-                                <Icon icon='ph:info-light'/>
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}>
-                        <FormControlLabel control={<Checkbox
-                            checked={additionalPresentationTime}
-                            onChange={handleAdditionalClientTimeToggle}
-                            sx={{padding: '3px'}} defaultChecked/>}
-                                          label='Additional client presentation time'/>
-                        <Tooltip arrow
-                                 placement='right'
-                                 title='If client would like to spend additional time on the property with the inspector, time will be extended on site to accommodate. Additional costs apply'>
-                            <IconButton sx={{padding: '3px'}} aria-label='capture screenshot' color='primary'>
-                                <Icon color='primary' icon='ph:info-light'/>
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                </Box>
+                {renderChoices()}
             </Grid>
         )
     }
@@ -225,7 +237,7 @@ const StepAppointmentAvailability = props => {
                         Select a time that works for everybody
                     </Typography>
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item sm={12} md={4}>
                     <DatePickerWrapper
                         sx={{'& .react-datepicker': {boxShadow: 'none !important', border: 'none !important'}}}>
                         <DatePicker

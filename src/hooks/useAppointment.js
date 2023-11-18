@@ -82,6 +82,12 @@ const useAppointment = () => {
         setClientTimeSlot(timeSlotPair.clientSlot.startLabel);
     }, [inspectorTimeSlot, clientTimeSlot, timeSlots]);
 
+    const resetTimeSlot = () => {
+        setSelectedTimeSlotPair(null);
+        setInspectorTimeSlot('');
+        setClientTimeSlot('');
+    }
+
     return {
         address,
         additionalServices,
@@ -101,6 +107,7 @@ const useAppointment = () => {
         timeSlots,
         unit,
         zipCode,
+        resetTimeSlot,
         setAddress,
         setAdditionalServices,
         setAdditionalPresentationTime,
