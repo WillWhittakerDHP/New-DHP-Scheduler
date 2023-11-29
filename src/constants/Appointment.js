@@ -32,8 +32,30 @@ export const ContactTypes = {
     SELLER: 'seller'
 }
 
-export const SlotLengthServiceTypes = {
-    [ServiceTypes.BUYERS_INSPECTION]: {hours: 2},
-    [ServiceTypes.WALK_AND_TALK]: {hours: 1},
+export const DataCollectionBaseTimes = {
+    [ServiceTypes.BUYERS_INSPECTION]: {minutes: 30},
+    [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
     [ServiceTypes.RE_INSPECTION]: {minutes: 30}
 }
+
+export const ReportWritingBaseTimes = {
+    [ServiceTypes.BUYERS_INSPECTION]: {minutes: 30},
+    [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
+    [ServiceTypes.RE_INSPECTION]: {minutes: 30}
+}
+
+export const ClientPresentationBaseTimes = {
+    [ServiceTypes.BUYERS_INSPECTION]: {minutes: 39},
+    [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
+    [ServiceTypes.RE_INSPECTION]: {minutes: 30}
+}
+
+export const DEFAULT_INCREMENT = 30;
+
+export const DATA_COLLECTION_BASE_SQFT = 750;
+export const REPORT_WRITING_BASE_SQFT = 750;
+export const CLIENT_PRESENTATION_BASE_SQFT = 800;
+
+export const DATA_COLLECTION_SQFT_RATE = 0.06;
+export const REPORT_WRITING_SQFT_RATE = 0.06;
+export const CLIENT_PRESENTATION_SQFT_RATE = 0.03;

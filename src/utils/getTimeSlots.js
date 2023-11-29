@@ -1,8 +1,7 @@
 import add from  'date-fns/add';
 import isWithinInterval from 'date-fns/isWithinInterval';
 import format from "date-fns/format";
-
-const DEFAULT_INCREMENT = 30;
+import { DEFAULT_INCREMENT } from '../constants/Appointment';
 
 const getLabel = date => format(date, 'h:mmaaa');
 

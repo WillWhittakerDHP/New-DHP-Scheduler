@@ -1,11 +1,15 @@
 import {useCallback, useEffect, useState} from "react";
 import {
-    ContactTypes,
-    DwellingType,
+    CLIENT_PRESENTATION_BASE_SQFT, CLIENT_PRESENTATION_SQFT_RATE,
+    ClientPresentationBaseTimes,
+    ContactTypes, DATA_COLLECTION_BASE_SQFT, DATA_COLLECTION_SQFT_RATE,
+    DataCollectionBaseTimes,
+    DwellingType, REPORT_WRITING_BASE_SQFT, REPORT_WRITING_SQFT_RATE,
+    ReportWritingBaseTimes,
     RequesterTypes,
-    ServiceTypes,
-    SlotLengthServiceTypes
+    ServiceTypes
 } from '../constants/Appointment';
+import getSlotPart from "../utils/getSlotPart";
 import getTimeSlots from "../utils/getTimeSlots";
 
 const DEFAULT_CONTACT_INFO = {
@@ -53,8 +57,16 @@ const useAppointment = () => {
     const [slotLength, setSlotLength] = useState(DEFAULT_SLOT_LENGTH)
 
     useEffect(() => {
-        setSlotLength(SlotLengthServiceTypes[serviceType])
-    }, [serviceType]);
+        const dataCollectionTime = getSlotPart(dwellingSize, serviceType, DataCollectionBaseTimes, DATA_COLLECTION_BASE_SQFT, DATA_COLLECTION_SQFT_RATE);
+        const reportWritingTime = getSlotPart(dwellingSize, serviceType, ReportWritingBaseTimes, REPORT_WRITING_BASE_SQFT, REPORT_WRITING_SQFT_RATE);
+        const clientPresentationTime = getSlotPart(dwellingSize, serviceType, ClientPresentationBaseTimes, CLIENT_PRESENTATION_BASE_SQFT, CLIENT_PRESENTATION_SQFT_RATE);
+
+        const slotLength = dataCollectionTime + reportWritingTime + clientPresentationTime;
+
+        console.log(`Calculated slotLength: ${slotLength}`);
+
+        setSlotLength({ minutes: slotLength })
+    }, [serviceType, dwellingSize]);
 
     useEffect(() => {
         setTimeSlots(getTimeSlots(day, {
