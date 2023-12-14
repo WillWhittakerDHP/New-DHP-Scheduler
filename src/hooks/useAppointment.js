@@ -54,27 +54,45 @@ const useAppointment = () => {
 
     const [selectedTimeSlotPair, setSelectedTimeSlotPair] = useState();
     const [timeSlots, setTimeSlots] = useState([]);
-    const [slotLength, setSlotLength] = useState(DEFAULT_SLOT_LENGTH)
+    const [appointmentDetails, setAppointmentDetails] = useState({
+        dataCollectionLength: { minutes: 0 },
+        reportWritingLength: { minutes: 0 },
+        clientPresentationLength: { minutes: 0 },
+        appointmentLength: { minutes: DEFAULT_SLOT_LENGTH }
+    })
 
     useEffect(() => {
         const dataCollectionTime = getSlotPart(dwellingSize, serviceType, DataCollectionBaseTimes, DATA_COLLECTION_BASE_SQFT, DATA_COLLECTION_SQFT_RATE);
         const reportWritingTime = getSlotPart(dwellingSize, serviceType, ReportWritingBaseTimes, REPORT_WRITING_BASE_SQFT, REPORT_WRITING_SQFT_RATE);
         const clientPresentationTime = getSlotPart(dwellingSize, serviceType, ClientPresentationBaseTimes, CLIENT_PRESENTATION_BASE_SQFT, CLIENT_PRESENTATION_SQFT_RATE);
 
-        const slotLength = dataCollectionTime + reportWritingTime + clientPresentationTime;
+        const onsiteLength = dataCollectionTime + reportWritingTime + clientPresentationTime;
 
-        console.log(`Calculated slotLength: ${slotLength}`);
+        console.log(`Calculated dataCollectionLength: ${dataCollectionTime}`);
+        console.log(`Calculated reportWritingTime: ${reportWritingTime}`);
+        console.log(`Calculated clientPresentationTime: ${clientPresentationTime}`);
+        console.log(`Calculated onsiteLength: ${onsiteLength}`);
 
-        setSlotLength({ minutes: slotLength })
+        const appointmentDetails = {
+            dataCollectionLength: { minutes: dataCollectionTime },
+            reportWritingLength: { minutes: reportWritingTime },
+            clientPresentationLength: { minutes: clientPresentationTime },
+            appointmentLength: { minutes: onsiteLength }
+        };
+
+        setAppointmentDetails(appointmentDetails);
+
+        console.log(appointmentDetails);
+
     }, [serviceType, dwellingSize]);
 
     useEffect(() => {
         setTimeSlots(getTimeSlots(day, {
             startTime: [7, 0],
             endTime: [21, 0],
-            slotLength
+            appointmentDetails
         }))
-    }, [day, slotLength]);
+    }, [day, appointmentDetails]);
 
     const getInspectorTimeSlot = useCallback(inspectorTimeStart => {
         return timeSlots.find(({inspectorSlot}) => inspectorSlot.startLabel === inspectorTimeStart);

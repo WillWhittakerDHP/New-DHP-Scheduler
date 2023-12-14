@@ -1,17 +1,28 @@
-import add from  'date-fns/add';
+import add from 'date-fns/add';
 import isWithinInterval from 'date-fns/isWithinInterval';
 import format from "date-fns/format";
-import { DEFAULT_INCREMENT } from '../constants/Appointment';
+import sub from 'date-fns/sub';
+
+import {DEFAULT_INCREMENT} from '../constants/Appointment';
+
+/* -------- Helpers -------- */
 
 const getLabel = date => format(date, 'h:mmaaa');
 
-const getSlotInterval = (date, { minutesIncrement, slotLength }) => {
+const getSlot = (date, {minutesIncrement, appointmentLength}) => {
     const newStart = minutesIncrement
-        ? add(new Date(date.getTime()), { minutes: minutesIncrement })
+        ? add(new Date(date.getTime()), {minutes: minutesIncrement})
         : date;
 
+    console.log(appointmentLength);
+
     const start = new Date(newStart.getTime())
-    const end = add(new Date(newStart.getTime()), slotLength)
+    const end = add(new Date(newStart.getTime()), appointmentLength)
+
+    console.log(`Start time:`);
+    console.log(start);
+    console.log(`End time:`);
+    console.log(end);
 
     return {
         start,
@@ -21,38 +32,82 @@ const getSlotInterval = (date, { minutesIncrement, slotLength }) => {
     }
 }
 
-const getTimeSlots = (date, { startTime, endTime, slotLength }) => {
+const getClientSlot = (currentSlot, appointmentDetails) => {
+    const {clientPresentationLength, dataCollectionLength, reportWritingLength} = appointmentDetails;
+
+    return getSlot(currentSlot.start, {
+        minutesIncrement: dataCollectionLength.minutes + reportWritingLength.minutes,
+        appointmentLength: clientPresentationLength
+    });
+}
+
+const isWithinWorkingHours = (slot, dayInterval) => {
+    return isWithinInterval(slot.end, dayInterval);
+}
+
+const isAvailableSlot = (slot, appointmentIntervals = []) => {
+    return !appointmentIntervals.some(appointmentInterval => {
+        const { start, end } = appointmentInterval;
+        const paddedStart = sub(start, { minutes: 30 });
+        const paddedEnd = add(end, { minutes: 30 });
+
+        console.log('---- isAvailableSlot ---- ');
+        console.log(slot.start);
+        console.log(paddedStart);
+        console.log(paddedEnd);
+
+        return isWithinInterval(slot.start, { start: paddedStart, end: paddedEnd });
+    })
+}
+
+const getMockAppointment = (date, startHour) => {
+    return {
+        start: add(new Date(date.getTime()), {hours: startHour}),
+        end: add(new Date(date.getTime()), {hours: startHour + 2})
+    }
+}
+
+const getMockAppointmentIntervals = date => {
+    return [
+        getMockAppointment(date, 10),
+        getMockAppointment(date, 14)
+    ]
+}
+
+/* -------- Entry -------- */
+
+const getTimeSlots = (date, {startTime, endTime, appointmentDetails}) => {
 
     if (!date) {
         return [];
     }
 
-    const [ startingHours, startingMinutes ] = startTime;
-    const [ endHours, endMinutes ] = endTime;
+    const mockAppointments = getMockAppointmentIntervals(date);
 
-    const startDate = add(new Date(date.getTime()), { hours: startingHours, minutes: startingMinutes });
-    const endDate = add(new Date(date.getTime()), { hours: endHours, minutes: endMinutes + 1 });
+    const { appointmentLength } = appointmentDetails;
+    const [startingHours, startingMinutes] = startTime;
+    const [endHours, endMinutes] = endTime;
+
+    const dayInterval = {
+        start: add(new Date(date.getTime()), {hours: startingHours, minutes: startingMinutes}),
+        end: add(new Date(date.getTime()), {hours: endHours, minutes: endMinutes + 1})
+    }
 
     const timeSlots = [];
-    let haveGoodSlots = true;
-    let currentSlot = getSlotInterval(startDate, { slotLength });
+    let inspectorSlot = getSlot(dayInterval.start, { appointmentLength });
 
-    while (haveGoodSlots) {
-        if (isWithinInterval(currentSlot.end, { start: startDate, end: endDate })) {
+    while (isWithinWorkingHours(inspectorSlot, dayInterval)) {
+        if (isAvailableSlot(inspectorSlot, mockAppointments)) {
             timeSlots.push({
-                inspectorSlot: currentSlot,
-                clientSlot: getSlotInterval(currentSlot.start, {
-                    minutesIncrement: 60,
-                    slotLength: { hours: 1 }
-                })
+                inspectorSlot,
+                clientSlot: getClientSlot(inspectorSlot, appointmentDetails)
             });
-            currentSlot = getSlotInterval(currentSlot.start, {
-                minutesIncrement: DEFAULT_INCREMENT,
-                slotLength
-            });
-        } else {
-            haveGoodSlots = false;
         }
+
+        inspectorSlot = getSlot(inspectorSlot.start, {
+            minutesIncrement: DEFAULT_INCREMENT,
+            appointmentLength: appointmentLength
+        });
     }
 
     return timeSlots;
