@@ -46,11 +46,11 @@ const StepAppointmentAvailability = props => {
     }
 
     const getInspectorTimes = () => {
-        return timeSlots.map(({inspectorSlot}) => inspectorSlot.startLabel);
+        return timeSlots.map(({inspectorAppointment}) => inspectorAppointment.startLabel);
     }
 
     const getClientTimes = () => {
-        return timeSlots.map(({clientSlot}) => clientSlot.startLabel);
+        return timeSlots.map(({clientAppointment}) => clientAppointment.startLabel);
     }
 
     /* -------- Handlers -------- */
@@ -118,7 +118,7 @@ const StepAppointmentAvailability = props => {
             return null;
         }
 
-        const {inspectorSlot, clientSlot} = selectedTimeSlotPair;
+        const {inspectorAppointment, clientAppointment} = selectedTimeSlotPair;
 
         return (
             <Box sx={{
@@ -130,11 +130,11 @@ const StepAppointmentAvailability = props => {
             }}>
                 <Button sx={{width: '100%', minWidth: '250px', justifyContent: 'right'}} variant='contained'
                         onClick={handleInspectorClick}>
-                    Inspector: {inspectorSlot.startLabel} → {inspectorSlot.endLabel}
+                    Inspector: {inspectorAppointment.startLabel} → {inspectorAppointment.endLabel}
                 </Button>
                 <Button sx={{width: '50%', minWidth: '250px', justifyContent: 'right'}} color='warning' variant='contained'
                         onClick={handleClientClick}>
-                    Client: {clientSlot.startLabel} → {clientSlot.endLabel}
+                    Client: {clientAppointment.startLabel} → {clientAppointment.endLabel}
                 </Button>
             </Box>
         )

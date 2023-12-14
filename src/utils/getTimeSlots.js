@@ -45,18 +45,19 @@ const isWithinWorkingHours = (slot, dayInterval) => {
     return isWithinInterval(slot.end, dayInterval);
 }
 
-const isAvailableSlot = (slot, appointmentIntervals = []) => {
+const isAvailableSlot = (candidateAppointment, appointmentIntervals = []) => {
     return !appointmentIntervals.some(appointmentInterval => {
         const { start, end } = appointmentInterval;
         const paddedStart = sub(start, { minutes: 30 });
         const paddedEnd = add(end, { minutes: 30 });
 
         console.log('---- isAvailableSlot ---- ');
-        console.log(slot.start);
+        console.log(candidateAppointment.start);
         console.log(paddedStart);
         console.log(paddedEnd);
 
-        return isWithinInterval(slot.start, { start: paddedStart, end: paddedEnd });
+        return isWithinInterval(candidateAppointment.start, { start: paddedStart, end: paddedEnd }) ||
+            isWithinInterval(candidateAppointment.end, { start: paddedStart, end: paddedEnd });
     })
 }
 
@@ -94,17 +95,17 @@ const getTimeSlots = (date, {startTime, endTime, appointmentDetails}) => {
     }
 
     const timeSlots = [];
-    let inspectorSlot = getSlot(dayInterval.start, { appointmentLength });
+    let inspectorAppointment = getSlot(dayInterval.start, { appointmentLength });
 
-    while (isWithinWorkingHours(inspectorSlot, dayInterval)) {
-        if (isAvailableSlot(inspectorSlot, mockAppointments)) {
+    while (isWithinWorkingHours(inspectorAppointment, dayInterval)) {
+        if (isAvailableSlot(inspectorAppointment, mockAppointments)) {
             timeSlots.push({
-                inspectorSlot,
-                clientSlot: getClientSlot(inspectorSlot, appointmentDetails)
+                inspectorAppointment,
+                clientAppointment: getClientSlot(inspectorAppointment, appointmentDetails)
             });
         }
 
-        inspectorSlot = getSlot(inspectorSlot.start, {
+        inspectorAppointment = getSlot(inspectorAppointment.start, {
             minutesIncrement: DEFAULT_INCREMENT,
             appointmentLength: appointmentLength
         });

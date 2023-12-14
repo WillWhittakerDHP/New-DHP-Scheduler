@@ -95,11 +95,11 @@ const useAppointment = () => {
     }, [day, appointmentDetails]);
 
     const getInspectorTimeSlot = useCallback(inspectorTimeStart => {
-        return timeSlots.find(({inspectorSlot}) => inspectorSlot.startLabel === inspectorTimeStart);
+        return timeSlots.find(({inspectorAppointment}) => inspectorAppointment.startLabel === inspectorTimeStart);
     }, [timeSlots]);
 
     const getClientTimeSlot = useCallback(clientTimeStart => {
-        return timeSlots.find(({clientSlot}) => clientSlot.startLabel === clientTimeStart);
+        return timeSlots.find(({clientAppointment}) => clientAppointment.startLabel === clientTimeStart);
     }, [timeSlots]);
 
     const setTimeSlot = useCallback(({inspectorStart, clientStart}) => {
@@ -108,8 +108,8 @@ const useAppointment = () => {
             : getClientTimeSlot(clientStart)
 
         setSelectedTimeSlotPair(timeSlotPair);
-        setInspectorTimeSlot(timeSlotPair.inspectorSlot.startLabel)
-        setClientTimeSlot(timeSlotPair.clientSlot.startLabel);
+        setInspectorTimeSlot(timeSlotPair.inspectorAppointment.startLabel)
+        setClientTimeSlot(timeSlotPair.clientAppointment.startLabel);
     }, [inspectorTimeSlot, clientTimeSlot, timeSlots]);
 
     const resetTimeSlot = () => {
