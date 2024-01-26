@@ -33,7 +33,9 @@ const getSlot = (date, {minutesIncrement, appointmentLength}) => {
 }
 
 const getClientSlot = (currentSlot, appointmentDetails) => {
-    const {clientPresentationLength, dataCollectionLength, reportWritingLength} = appointmentDetails;
+    console.log(appointmentDetails);
+
+    const { clientPresentationLength, dataCollectionLength, reportWritingLength } = appointmentDetails;
 
     return getSlot(currentSlot.start, {
         minutesIncrement: dataCollectionLength.minutes + reportWritingLength.minutes,
@@ -70,7 +72,7 @@ const getMockAppointment = (date, startHour) => {
 
 const getMockAppointmentIntervals = date => {
     return [
-        getMockAppointment(date, 10),
+        // getMockAppointment(date, 10),
         getMockAppointment(date, 14)
     ]
 }

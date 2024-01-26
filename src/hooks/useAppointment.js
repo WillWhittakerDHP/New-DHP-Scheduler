@@ -6,7 +6,7 @@ import {
     DataCollectionBaseTimes,
     DwellingType, REPORT_WRITING_BASE_SQFT, REPORT_WRITING_SQFT_RATE,
     ReportWritingBaseTimes,
-    RequesterTypes,
+    RequesterTypes, ServiceTypeNames,
     ServiceTypes
 } from '../constants/Appointment';
 import getSlotPart from "../utils/getSlotPart";
@@ -24,7 +24,7 @@ const useAppointment = () => {
 
     // Service Selection
     const [requester, setRequester] = useState(RequesterTypes.BUYER);
-    const [serviceType, setServiceType] = useState(ServiceTypes.BUYERS_INSPECTION);
+    const [serviceType, setServiceType] = useState(ServiceTypeNames.BUYERS_INSPECTION);
     const [additionalServices, setAdditionalServices] = useState([]);
 
     // Property Details
@@ -62,27 +62,19 @@ const useAppointment = () => {
     })
 
     useEffect(() => {
-        const dataCollectionTime = getSlotPart(dwellingSize, serviceType, DataCollectionBaseTimes, DATA_COLLECTION_BASE_SQFT, DATA_COLLECTION_SQFT_RATE);
-        const reportWritingTime = getSlotPart(dwellingSize, serviceType, ReportWritingBaseTimes, REPORT_WRITING_BASE_SQFT, REPORT_WRITING_SQFT_RATE);
-        const clientPresentationTime = getSlotPart(dwellingSize, serviceType, ClientPresentationBaseTimes, CLIENT_PRESENTATION_BASE_SQFT, CLIENT_PRESENTATION_SQFT_RATE);
+        const { appointmentParts } = ServiceTypes[serviceType];
+        const onsiteLength = appointmentParts.reduce((acc, partType) => {
 
-        const onsiteLength = dataCollectionTime + reportWritingTime + clientPresentationTime;
+            const slotPart = getSlotPart(dwellingSize, partType, serviceType);
+            acc.appointmentLength.minutes += slotPart;
+            acc[`${partType}Length`] = { minutes: slotPart };
 
-        console.log(`Calculated dataCollectionLength: ${dataCollectionTime}`);
-        console.log(`Calculated reportWritingTime: ${reportWritingTime}`);
-        console.log(`Calculated clientPresentationTime: ${clientPresentationTime}`);
-        console.log(`Calculated onsiteLength: ${onsiteLength}`);
+            return acc;
+        }, { appointmentLength: { minutes: 0 }})
 
-        const appointmentDetails = {
-            dataCollectionLength: { minutes: dataCollectionTime },
-            reportWritingLength: { minutes: reportWritingTime },
-            clientPresentationLength: { minutes: clientPresentationTime },
-            appointmentLength: { minutes: onsiteLength }
-        };
+        setAppointmentDetails(onsiteLength);
 
-        setAppointmentDetails(appointmentDetails);
-
-        console.log(appointmentDetails);
+        console.log(onsiteLength);
 
     }, [serviceType, dwellingSize]);
 

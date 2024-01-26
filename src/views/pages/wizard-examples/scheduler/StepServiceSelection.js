@@ -11,7 +11,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
-import { RequesterTypes, ServiceTypes } from "src/constants/Appointment";
+import {RequesterTypeMap, RequesterTypes, ServiceTypes} from "src/constants/Appointment";
 
 // ** Custom Components Imports
 import CustomTextField from 'src/@core/components/mui/text-field'
@@ -120,6 +120,26 @@ const StepServiceSelection = props => {
 
     /* ----- Renderers ----- */
 
+    const renderServiceTypes = (requester) => {
+
+        if (!requester) {
+            return;
+        }
+
+        return RequesterTypeMap[requester].map(serviceTypeName => {
+            const { title, description } = ServiceTypes[serviceTypeName];
+
+            return (
+                <FormControlLabel sx={{mt: 5}} value={serviceTypeName} control={<Radio/>} label={
+                    <Fragment>
+                        <Typography variant='body1'>{title}</Typography>
+                        <Typography variant='body2'>{description}</Typography>
+                    </Fragment>
+                } />
+            )
+        });
+    }
+
     return (
         <>
             <Grid container sx={{mb: 6}} spacing={4}>
@@ -147,27 +167,7 @@ const StepServiceSelection = props => {
                             value={serviceType}
                             aria-labelledby='common-area-radio'
                             onChange={handleServiceTypeChange}>
-                            <FormControlLabel sx={{mt: 5}} value={ServiceTypes.BUYERS_INSPECTION} control={<Radio/>} label={
-                                <Fragment>
-                                    <Typography variant='body1'>Buyer's Inspection</Typography>
-                                    <Typography variant='body2'>I am under contract on a home, and I need someone to
-                                        inspect the property, test all of the equipment, and recommend
-                                        repairs</Typography>
-                                </Fragment>}/>
-                            <FormControlLabel sx={{mt: 5}} value={ServiceTypes.WALK_AND_TALK} control={<Radio/>} label={
-                                <Fragment>
-                                    <Typography variant='body1'>Walk & Talk</Typography>
-                                    <Typography variant='body2'>I want to buy a home and before I finalize my offer I
-                                        need a professional to examine the property with me and answer some
-                                        questions</Typography>
-                                </Fragment>}/>
-                            <FormControlLabel sx={{mt: 5}} value={ServiceTypes.RE_INSPECTION} control={<Radio/>} label={
-                                <Fragment>
-                                    <Typography variant='body1'>Re-Inspection</Typography>
-                                    <Typography variant='body2'>The seller agreed to make repairs as part of our
-                                        negotiation, and I need a professional to verify that they completed the work
-                                        they promised</Typography>
-                                </Fragment>}/>
+                            {renderServiceTypes(requester)}
                         </RadioGroup>
                     </FormControl>
                 </Grid>
