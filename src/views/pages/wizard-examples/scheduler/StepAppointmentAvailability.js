@@ -89,9 +89,10 @@ const StepAppointmentAvailability = props => {
     const renderTimeSlots = () => {
         const selectedTimeSlot = startTimeType === 'inspector' ? inspectorTimeSlot : clientTimeSlot;
 
-        const timeSlots = getTimeSlots(startTimeType).map(slot => (slot ?
+        const timeSlots = getTimeSlots(startTimeType).map((slot, index) => (slot ?
                 <Button
                     color={startTimeType === 'inspector' ? 'primary' : 'warning'}
+                    key={index}
                     variant={selectedTimeSlot === slot ? 'contained' : 'outlined'} size='small'
                     onClick={() => handleTimeSlotClick(slot, startTimeType)}>
                     {slot}

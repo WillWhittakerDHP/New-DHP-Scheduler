@@ -141,24 +141,6 @@ export const ContactTypes = {
     SELLER: 'seller'
 }
 
-// export const DataCollectionBaseTimes = {
-//     [ServiceTypes.BUYERS_INSPECTION]: {minutes: 30},
-//     [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
-//     [ServiceTypes.RE_INSPECTION]: {minutes: 30}
-// }
-//
-// export const ReportWritingBaseTimes = {
-//     [ServiceTypes.BUYERS_INSPECTION]: {minutes: 30},
-//     [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
-//     [ServiceTypes.RE_INSPECTION]: {minutes: 30}
-// }
-//
-// export const ClientPresentationBaseTimes = {
-//     [ServiceTypes.BUYERS_INSPECTION]: {minutes: 39},
-//     [ServiceTypes.WALK_AND_TALK]: {minutes: 60},
-//     [ServiceTypes.RE_INSPECTION]: {minutes: 30}
-// }
-
 export const PartTypeMap = {
     [PartTypes.DATA_COLLECTION]: {
         [ServiceTypeNames.BUYERS_INSPECTION]: {

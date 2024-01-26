@@ -10,19 +10,16 @@ import {DEFAULT_INCREMENT} from '../constants/Appointment';
 const getLabel = date => format(date, 'h:mmaaa');
 
 const getSlot = (date, {minutesIncrement, appointmentLength}) => {
+    if (!appointmentLength) {
+        return {}
+    }
+
     const newStart = minutesIncrement
         ? add(new Date(date.getTime()), {minutes: minutesIncrement})
         : date;
 
-    console.log(appointmentLength);
-
-    const start = new Date(newStart.getTime())
-    const end = add(new Date(newStart.getTime()), appointmentLength)
-
-    console.log(`Start time:`);
-    console.log(start);
-    console.log(`End time:`);
-    console.log(end);
+    const start = new Date(newStart.getTime());
+    const end = add(new Date(newStart.getTime()), appointmentLength);
 
     return {
         start,
@@ -33,8 +30,6 @@ const getSlot = (date, {minutesIncrement, appointmentLength}) => {
 }
 
 const getClientSlot = (currentSlot, appointmentDetails) => {
-    console.log(appointmentDetails);
-
     const { clientPresentationLength, dataCollectionLength, reportWritingLength } = appointmentDetails;
 
     return getSlot(currentSlot.start, {
@@ -52,11 +47,6 @@ const isAvailableSlot = (candidateAppointment, appointmentIntervals = []) => {
         const { start, end } = appointmentInterval;
         const paddedStart = sub(start, { minutes: 30 });
         const paddedEnd = add(end, { minutes: 30 });
-
-        console.log('---- isAvailableSlot ---- ');
-        console.log(candidateAppointment.start);
-        console.log(paddedStart);
-        console.log(paddedEnd);
 
         return isWithinInterval(candidateAppointment.start, { start: paddedStart, end: paddedEnd }) ||
             isWithinInterval(candidateAppointment.end, { start: paddedStart, end: paddedEnd });

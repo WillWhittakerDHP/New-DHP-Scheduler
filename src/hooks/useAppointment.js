@@ -74,7 +74,8 @@ const useAppointment = () => {
 
         setAppointmentDetails(onsiteLength);
 
-        console.log(onsiteLength);
+        console.log(`---- Appointment Details ----`);
+        console.log(appointmentDetails)
 
     }, [serviceType, dwellingSize]);
 
