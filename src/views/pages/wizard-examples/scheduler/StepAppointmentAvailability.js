@@ -17,6 +17,7 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from '@mui/material/IconButton';
 import Icon from "../../../../@core/components/icon";
+import Slider from '@mui/material/Slider';
 
 import parse from 'date-fns/parse';
 
@@ -28,6 +29,7 @@ const StepAppointmentAvailability = props => {
             additionalPresentationTime,
             day,
             inspectorTimeSlot,
+            isClientPresent,
             clientTimeSlot,
             minimizeInspectionTime,
             selectedTimeSlotPair,
@@ -131,12 +133,14 @@ const StepAppointmentAvailability = props => {
             }}>
                 <Button sx={{width: '100%', minWidth: '250px', justifyContent: 'right'}} variant='contained'
                         onClick={handleInspectorClick}>
-                    Inspector: {inspectorAppointment.startLabel} → {inspectorAppointment.endLabel}
+                    {isClientPresent ? 'Inspector' : 'Time onsite'}: {inspectorAppointment.startLabel} → {inspectorAppointment.endLabel}
                 </Button>
-                <Button sx={{width: '50%', minWidth: '250px', justifyContent: 'right'}} color='warning' variant='contained'
-                        onClick={handleClientClick}>
-                    Client: {clientAppointment.startLabel} → {clientAppointment.endLabel}
-                </Button>
+                {isClientPresent &&
+                    <Button sx={{width: '50%', minWidth: '250px', justifyContent: 'right'}} color='warning'
+                            variant='contained'
+                            onClick={handleClientClick}>
+                        Client: {clientAppointment.startLabel} → {clientAppointment.endLabel}
+                    </Button>}
             </Box>
         )
     }
@@ -177,6 +181,46 @@ const StepAppointmentAvailability = props => {
                         </IconButton>
                     </Tooltip>
                 </Box>
+                {
+                    <Slider
+                        step={null}
+                        // marks={marks}
+                        defaultValue={20}
+                        valueLabelDisplay='auto'
+                        // getAriaValueText={valuetext}
+                        // valueLabelFormat={valueLabelFormat}
+                        aria-labelledby='restricted-values-slider'
+                    />
+                }
+            </Box>
+        )
+    }
+
+    const renderParticipantSelection = () => {
+        if (!isClientPresent) {
+            return null;
+        }
+
+        return (
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'end',
+                flexWrap: 'wrap'
+            }}>
+                <Typography variant='body2' sx={{mr: 3}}>
+                    Show start times for:
+                </Typography>
+                <Button variant={startTimeType === 'inspector' ? 'contained' : 'outlined'}
+                        color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small'
+                        onClick={handleInspectorClick}>
+                    Inspector
+                </Button>
+                <Button variant={startTimeType !== 'inspector' ? 'contained' : 'outlined'}
+                        color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small' sx={{ml: 1}}
+                        onClick={handleClientClick}>
+                    Client
+                </Button>
             </Box>
         )
     }
@@ -200,26 +244,7 @@ const StepAppointmentAvailability = props => {
 
         return (
             <Grid item sm={12} md={8}>
-                <Box sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
-                    flexWrap: 'wrap'
-                }}>
-                    <Typography variant='body2' sx={{mr: 3}}>
-                        Show start times for:
-                    </Typography>
-                    <Button variant={startTimeType === 'inspector' ? 'contained' : 'outlined'}
-                            color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small'
-                            onClick={handleInspectorClick}>
-                        Inspector
-                    </Button>
-                    <Button variant={startTimeType !== 'inspector' ? 'contained' : 'outlined'}
-                            color={startTimeType === 'inspector' ? 'primary' : 'warning'} size='small' sx={{ml: 1}}
-                            onClick={handleClientClick}>
-                        Client
-                    </Button>
-                </Box>
+                {renderParticipantSelection()}
                 {renderTimeSlots()}
                 {renderTimeBars()}
                 {renderChoices()}

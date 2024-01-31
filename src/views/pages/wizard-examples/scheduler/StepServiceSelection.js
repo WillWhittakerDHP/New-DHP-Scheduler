@@ -2,6 +2,7 @@
 import {Fragment, useState} from 'react'
 
 // ** MUI Imports
+import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
 import {useTheme} from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
@@ -24,11 +25,17 @@ import FormControl from "@mui/material/FormControl";
 import Box from "@mui/material/Box";
 import CustomChip from "../../../../@core/components/mui/chip";
 import MenuItem from "@mui/material/MenuItem";
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction'
+
 
 const allAdditionalServices = [
-    'Radon Testing',
-    'Blue Tape',
-    'Re-Inspection'
+    { name: 'Radon Testing', description: 'Blah blah blah blah blah blah blah blah blah blah' },
+    { name: 'Blue Tape', description: 'Blah blah' },
+    { name: 'Re-Inspection', description: 'Blah blah' }
 ]
 
 const data = [
@@ -100,10 +107,11 @@ const StepServiceSelection = props => {
 
     /* ----- Handlers ----- */
 
-    const handleAdditionalServicesChange = event => {
-        const { target: {value} } = event
+    const handleAdditionalServicesChange = name => {
+        const services = new Set(appointment.additionalServices);
+        services.add(name);
 
-        appointment.setAdditionalServices(typeof value === 'string' ? value.split(',') : value)
+        appointment.setAdditionalServices(Array.from(services));
     }
 
     const handleRequesterChange = event => {
@@ -116,6 +124,12 @@ const StepServiceSelection = props => {
 
     const handleServiceTypeChange = event => {
         appointment.setServiceType(event.target.value);
+    }
+
+    const handleDeleteAdditionalService = deletedService => {
+        const services = appointment.additionalServices.filter(service => service !== deletedService);
+
+        appointment.setAdditionalServices(services);
     }
 
     /* ----- Renderers ----- */
@@ -171,31 +185,31 @@ const StepServiceSelection = props => {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                <Grid item xs={12} spacing={4}>
-                    <CustomTextField
-                        label="Additional Services"
-                        select
-                        fullWidth
-                        id='select-furnishing-details'
-                        SelectProps={{
-                            multiple: true,
-                            value: additionalServices,
-                            onChange: e => handleAdditionalServicesChange(e),
-                            renderValue: selected => (
-                                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
-                                    {selected.map(value => (
-                                        <CustomChip rounded key={value} label={value} skin='light' size='small'/>
-                                    ))}
-                                </Box>
-                            )
-                        }}
-                    >
-                        {allAdditionalServices.map(service => (
-                            <MenuItem key={service} value={service}>
-                                {service}
-                            </MenuItem>
-                        ))}
-                    </CustomTextField>
+                <Grid item xs={6} spacing={4}>
+                    <FormLabel sx={{fontSize: theme => theme.typography.h5.fontSize}}>
+                        Additional Services
+                    </FormLabel>
+                    <List>
+                        {
+                            allAdditionalServices.map(({ name, description }) => (
+                                <ListItem>
+                                    <ListItemButton onClick={() => handleAdditionalServicesChange(name)}>
+                                        <ListItemText primary={name} secondary={description} />
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge='end'>
+                                                <Icon icon='tabler:plus' />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItemButton>
+                                </ListItem>
+                            ))
+                        }
+                    </List>
+                </Grid>
+                <Grid item xs={6} spacing={4}>
+                    {additionalServices.map(service =>
+                        <Chip label={service} color='primary' variant='outlined' onDelete={() => handleDeleteAdditionalService(service)} />
+                    )}
                 </Grid>
             </Grid>
         </>

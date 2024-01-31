@@ -11,10 +11,11 @@ import Typography from '@mui/material/Typography'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import CustomRadioIcons from 'src/@core/components/custom-radio/icons'
 import InputAdornment from "@mui/material/InputAdornment";
+import {DwellingType} from "../../../../constants/Appointment";
 
 const data = [
     {
-        value: 'condo',
+        value: DwellingType.CONDO,
         isSelected: true,
         title: (
             <Typography sx={{mb: 1}} variant='h6'>
@@ -23,7 +24,7 @@ const data = [
         )
     },
     {
-        value: 'townhouse',
+        value: DwellingType.TOWNHOUSE,
         title: (
             <Typography sx={{mb: 1}} variant='h6'>
                 Townhouse
@@ -31,7 +32,7 @@ const data = [
         )
     },
     {
-        value: 'single_family',
+        value: DwellingType.SINGLE_FAMILY,
         title: (
             <Typography sx={{mb: 1}} variant='h6'>
                 Single Family
@@ -39,7 +40,7 @@ const data = [
         )
     },
     {
-        value: 'multi_family',
+        value: DwellingType.MULTI_FAMILY,
         title: (
             <Typography sx={{mb: 1}} variant='h6'>
                 Multi Family
@@ -56,6 +57,7 @@ const StepPropertyDetails = props => {
             city,
             dwellingSize,
             dwellingType,
+            numberOfUnits,
             state,
             unit,
             zipCode
@@ -92,6 +94,7 @@ const StepPropertyDetails = props => {
     }
 
     const handleDwellingTypeChange = prop => {
+        console.log(prop);
         if (typeof prop === 'string') {
             appointment.setDwellingType(prop)
         } else {
@@ -119,6 +122,14 @@ const StepPropertyDetails = props => {
         appointment.setDwellingSize(event.target.value);
     }
 
+    const handleNumberOfUnitsChange = event => {
+        appointment.setNumberOfUnits(event.target.value);
+    }
+
+
+    const isCondo = dwellingType === DwellingType.CONDO;
+    const isMultiFamily = dwellingType === DwellingType.MULTI_FAMILY;
+
     return (
         <>
             <Grid container sx={{mb: 6}} spacing={4}>
@@ -141,7 +152,7 @@ const StepPropertyDetails = props => {
                         Location
                     </Typography>
                 </Grid>
-                <Grid item xs={12} md={9}>
+                <Grid item xs={12} md={isCondo ? 9 : 12}>
                     <CustomTextField
                         fullWidth
                         label='Address'
@@ -151,14 +162,16 @@ const StepPropertyDetails = props => {
                         onChange={handleAddressChange}
                     />
                 </Grid>
-                <Grid item xs={12} md={3}>
-                    <CustomTextField
-                        fullWidth
-                        label='Unit'
-                        placeholder='10'
-                        value={unit}
-                        onChange={handleUnitChange}/>
-                </Grid>
+                {isCondo &&
+                    <Grid item xs={12} md={3}>
+                        <CustomTextField
+                            fullWidth
+                            label='Unit'
+                            placeholder='10'
+                            value={unit}
+                            onChange={handleUnitChange}/>
+                    </Grid>
+                }
                 <Grid item xs={12} md={6}>
                     <CustomTextField
                         fullWidth
@@ -173,7 +186,7 @@ const StepPropertyDetails = props => {
                         fullWidth
                         defaultValue='VA'
                         label='State'
-                        SelectProps={{ value: state, onChange: e => handleStateChange(e)}}>
+                        SelectProps={{value: state, onChange: e => handleStateChange(e)}}>
                         <MenuItem value='FL'>Florida</MenuItem>
                         <MenuItem value='VA'>Virginia</MenuItem>
                     </CustomTextField>
@@ -207,6 +220,16 @@ const StepPropertyDetails = props => {
                         }}
                     />
                 </Grid>
+                {isMultiFamily && <Grid item xs={12} md={6}>
+                    <CustomTextField
+                        fullWidth
+                        type='number'
+                        placeholder='0'
+                        label='Number of Units'
+                        value={numberOfUnits}
+                        onChange={handleNumberOfUnitsChange}
+                    />
+                </Grid>}
             </Grid>
         </>
     )
